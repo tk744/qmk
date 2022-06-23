@@ -1,3 +1,19 @@
+/* Copyright 2020 Tushar Khan
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 #include QMK_KEYBOARD_H
 #include "muse.h"
 
@@ -11,6 +27,10 @@
     ╚═════╝ ╚══════╝╚═╝     ╚═╝╚═╝  ╚═══╝╚═╝   ╚═╝   ╚═╝ ╚═════╝ ╚═╝  ╚═══╝╚══════╝
 */
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 0a04064362509a37a9120804a8e2334a5104864e
 #define LCTL_MASK (get_mods() & MOD_BIT(KC_LCTL))
 #define RCTL_MASK (get_mods() & MOD_BIT(KC_RCTL))
 #define CTL_MASK  (LCTL_MASK || RCTL_MASK)
@@ -56,11 +76,12 @@ enum keycodes {
     R_VOL, R_MEDIA, R_BRI, R_SC_V, R_SC_H, R_AR_V, R_AR_H,
 
     // command-line macros
-    CLEAR,      // [clear terminal line]
+    DEL_LN,     // [delete line]
     EMAIL,      // [email address]
     PHONE,      // [phone number]
-    GT_STAT,    // git status
-    GT_CMT,     // git commit
+    GT_CMT,     // git commit -m ''
+    SHEBANG,    // #!/usr/bin/env
+    CHMOD,      // chmod 744 *sh
     PY_VENV,    // source *env*/bin/activate
 };
 
@@ -217,9 +238,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         |-----------------------------------------------------------------------------------------------|
         |       |       |       | email |       |       |       |       |       |       | phone |       |
         |-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------|
-        |       |       | g stat| clear |       |       |       |       |       |       |       |       |
+        |       |       | g stat| del ln|       |       |       |       |       |       |       |       |
         |-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------|
-        |       |       |       | g cmt |py venv|       |       |       |       |       |       |       |
+        |       | CHMOD |       | g cmt |py venv|       |       |       |       |       |       |       |
         |-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------|
         |       |       |       |       |  xXx  |      BASE     | RAISE1|       |       |       |       |
         |-----------------------------------------------------------------------------------------------|
@@ -229,8 +250,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     */
     [_LOWER2] = LAYOUT_planck_grid(
         _______, XXXXXXX, XXXXXXX, EMAIL,   XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, PHONE,   _______,
-        _______, XXXXXXX, GT_STAT, CLEAR,   XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, _______,
-        _______, XXXXXXX, XXXXXXX, GT_CMT,  PY_VENV, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, _______,
+        _______, XXXXXXX, SHEBANG, DEL_LN,  XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, _______,
+        _______, CHMOD,   XXXXXXX, GT_CMT,  PY_VENV, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, _______,
         _______, _______, _______, _______, XXXXXXX, BASE,    BASE,    RAISE1,  _______, _______, _______, _______
     ),
 
@@ -336,7 +357,6 @@ layer_state_t layer_state_set_user(layer_state_t state) {
             // enabling base layer song breaks a lot of other songs including
             // - macro recording start song
             // - rotary feedback songs
-            
             // PLAY_SONG(base_song);
             break;
         case _HYPER:
@@ -365,7 +385,7 @@ layer_state_t layer_state_set_user(layer_state_t state) {
     return state;
 }
 
-// Keypresses
+// Keycode events
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     static bool panic_del = false;      // PANIC in delete-mode
@@ -374,10 +394,10 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     switch (keycode) {
 
         /*
-        ██   ██ ███████ ██    ██  ██████  ██████  ██████  ███████ ███████ 
-        ██  ██  ██       ██  ██  ██      ██    ██ ██   ██ ██      ██      
-        █████   █████     ████   ██      ██    ██ ██   ██ █████   ███████ 
-        ██  ██  ██         ██    ██      ██    ██ ██   ██ ██           ██ 
+        ██   ██ ███████ ██    ██  ██████  ██████  ██████  ███████ ███████
+        ██  ██  ██       ██  ██  ██      ██    ██ ██   ██ ██      ██
+        █████   █████     ████   ██      ██    ██ ██   ██ █████   ███████
+        ██  ██  ██         ██    ██      ██    ██ ██   ██ ██           ██
         ██   ██ ███████    ██     ██████  ██████  ██████  ███████ ███████
         */
 
@@ -461,14 +481,14 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             return false;
 
         /*
-        ███    ███  █████   ██████ ██████   ██████  ███████ 
-        ████  ████ ██   ██ ██      ██   ██ ██    ██ ██      
-        ██ ████ ██ ███████ ██      ██████  ██    ██ ███████ 
-        ██  ██  ██ ██   ██ ██      ██   ██ ██    ██      ██ 
+        ███    ███  █████   ██████ ██████   ██████  ███████
+        ████  ████ ██   ██ ██      ██   ██ ██    ██ ██
+        ██ ████ ██ ███████ ██      ██████  ██    ██ ███████
+        ██  ██  ██ ██   ██ ██      ██   ██ ██    ██      ██
         ██      ██ ██   ██  ██████ ██   ██  ██████  ███████
         */
 
-        case CLEAR:
+        case DEL_LN:
             if (record->event.pressed) {
                 tap_code16(LCTL(KC_E)); // go to start of line
                 tap_code16(LCTL(KC_U)); // clear to beginning of line
@@ -476,17 +496,22 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             break;
         case EMAIL:
             if (record->event.pressed) {
-                SEND_STRING(" ");
+                SEND_STRING("email macro not set");
             }
             break;
         case PHONE:
             if (record->event.pressed) {
-                SEND_STRING(" ");
+                SEND_STRING("phone macro not set");
             }
             break;
-        case GT_STAT:
+        case SHEBANG:
             if (record->event.pressed) {
-                SEND_STRING("git status ");
+                SEND_STRING("#!/usr/bin/env ");
+            }
+            break;
+        case CHMOD:
+            if (record->event.pressed) {
+                SEND_STRING("chmod 744 *.sh ");
             }
             break;
         case GT_CMT:
@@ -503,10 +528,10 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     };
 
     /*
-         █████  ██    ██ ██████  ██  ██████ 
-        ██   ██ ██    ██ ██   ██ ██ ██    ██ 
-        ███████ ██    ██ ██   ██ ██ ██    ██ 
-        ██   ██ ██    ██ ██   ██ ██ ██    ██ 
+         █████  ██    ██ ██████  ██  ██████
+        ██   ██ ██    ██ ██   ██ ██ ██    ██
+        ███████ ██    ██ ██   ██ ██ ██    ██
+        ██   ██ ██    ██ ██   ██ ██ ██    ██
         ██   ██  ██████  ██████  ██  ██████
     */
 
@@ -576,7 +601,6 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 }
 
 void post_process_record_user(uint16_t keycode, keyrecord_t *record) {
-    
 }
 
 
@@ -591,7 +615,7 @@ void post_process_record_user(uint16_t keycode, keyrecord_t *record) {
 
 
 #ifdef ENCODER_ENABLE
-void encoder_update_user(uint8_t index, bool clockwise) {
+bool encoder_update_user(uint8_t index, bool clockwise) {
     static int scroll_interval = 5;
 
     switch (rotary_state) {
@@ -662,5 +686,6 @@ void encoder_update_user(uint8_t index, bool clockwise) {
             }
             break;
     }
+    return true;
 }
 #endif
