@@ -27,10 +27,6 @@
     ╚═════╝ ╚══════╝╚═╝     ╚═╝╚═╝  ╚═══╝╚═╝   ╚═╝   ╚═╝ ╚═════╝ ╚═╝  ╚═══╝╚══════╝
 */
 
-<<<<<<< HEAD
-=======
-
->>>>>>> 0a04064362509a37a9120804a8e2334a5104864e
 #define LCTL_MASK (get_mods() & MOD_BIT(KC_LCTL))
 #define RCTL_MASK (get_mods() & MOD_BIT(KC_RCTL))
 #define CTL_MASK  (LCTL_MASK || RCTL_MASK)
